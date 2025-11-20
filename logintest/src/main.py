@@ -6,10 +6,14 @@ from main_view import MainView
 from services.keycloak_service import KeycloakService
 
 def main(page: ft.Page):
+    print(page.route)
     page.title = "logintest"
     keycloak_service = KeycloakService()
 
     def route_change(e):
+        print("route changed")
+        print(page.route)
+
         page.views.clear()
 
         if page.route == "/login":
@@ -26,11 +30,6 @@ def main(page: ft.Page):
                 )
             )
             page.update()
-
-        # HANDLE KEYCLOAK CALLBACK
-        elif page.route.startswith("/callback"):
-            print("=== KEYCLOAK CALLBACK DETECTED ===")
-            handle_keycloak_callback(page.route)
 
         # MAIN APP VIEW
         elif page.route == "/app":
@@ -54,16 +53,8 @@ def main(page: ft.Page):
                             title=ft.Text("Flexibler Schreibtisch"),
                             actions=[
                                 ft.IconButton(
-                                    icon=ft.Icons.SETTINGS,
-                                    on_click=lambda _: page.go("/settings")
-                                ),
-                                ft.IconButton(
                                     icon=ft.Icons.LOGOUT,
                                     on_click=lambda _: logout()
-                                ),
-                                ft.IconButton(
-                                    icon=ft.Icons.HELP_CENTER,
-                                    on_click=lambda _: page.go("/test")
                                 )
                             ]
                         ),
@@ -104,10 +95,13 @@ def main(page: ft.Page):
                             ]
                         )
                     )
+                    print("pre update")
                     page.update()
+                    print("post update")
 
                     # Exchange code for token
                     success, user_data = keycloak_service.exchange_code_for_token(authorization_code)
+                    print("post keycloak")
 
                     if success and user_data:
                         print(f"Keycloak login successful! Welcome {user_data['username']}")
@@ -117,7 +111,6 @@ def main(page: ft.Page):
                         page.session.set("keycloak_token", user_data['access_token'])
                         page.session.set("keycloak_refresh_token", user_data['refresh_token'])
 
-                        # Redirect to main app
                         page.go("/app")
                     else:
                         print("Failed to exchange authorization code")
@@ -143,6 +136,9 @@ def main(page: ft.Page):
         page.go("/login")
 
     page.on_route_change = route_change
-    page.go("/login")
+    if page.route.startswith("/callback"):
+        handle_keycloak_callback(page.route)
+    else:
+        page.go("/login")
 
 ft.app(target=main)

@@ -167,6 +167,7 @@ class LoginView:
         try:
             # Get authorization URL
             auth_url = self.keycloak_service.get_auth_url()
+            print(self.page.route)
 
             # Show message to user
             print("Opening browser for Keycloak login...")
