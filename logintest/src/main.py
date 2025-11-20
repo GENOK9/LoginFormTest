@@ -29,6 +29,7 @@ def main(page: ft.Page):
 
         # HANDLE KEYCLOAK CALLBACK
         elif page.route.startswith("/callback"):
+            print("=== KEYCLOAK CALLBACK DETECTED ===")
             handle_keycloak_callback(page.route)
 
         # MAIN APP VIEW
@@ -41,6 +42,7 @@ def main(page: ft.Page):
 
             if not display_user:
                 # No valid session, redirect to login
+                print("No valid session, redirecting to login")
                 page.go("/login")
                 return
 
@@ -73,6 +75,9 @@ def main(page: ft.Page):
 
     def handle_keycloak_callback(route: str):
         """Handle Keycloak OAuth2 callback"""
+        print(f"=== KEYCLOAK CALLBACK DEBUG ===")
+        print(f"Full callback route: {route}")
+
         try:
             # Parse URL parameters
             if "?" in route:
@@ -81,6 +86,7 @@ def main(page: ft.Page):
 
                 if "code" in params:
                     authorization_code = params["code"][0]
+                    print(f"Authorization code: {authorization_code}")
 
                     # Show loading
                     page.views.append(

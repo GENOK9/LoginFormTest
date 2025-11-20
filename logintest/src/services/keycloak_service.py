@@ -1,21 +1,26 @@
 from keycloak import KeycloakOpenID
 import os
-import webbrowser
-import urllib.parse
 from typing import Optional, Dict, Any
 from dotenv import load_dotenv
+import logging
+import urllib3
 
 load_dotenv()
 
 class KeycloakService:
-    def __init__(self):
+    def __init__(self, ):
+
+        server_url = os.getenv("KEYCLOAK_SERVER_URL")
+        realm_name = os.getenv("KEYCLOAK_REALM")
+        client_id = os.getenv("KEYCLOAK_CLIENT_ID")
+
         self.keycloak_openid = KeycloakOpenID(
-            server_url=os.getenv("KEYCLOAK_SERVER_URL"),  # e.g., "http://localhost:8080/"
-            client_id=os.getenv("KEYCLOAK_CLIENT_ID"),    # e.g., "your-client-id"
-            realm_name=os.getenv("KEYCLOAK_REALM"),       # e.g., "your-realm"
-            client_secret_key=os.getenv("KEYCLOAK_CLIENT_SECRET")  # Optional
+            server_url=server_url,  # e.g., "http://localhost:8080/"
+            client_id=client_id,    # e.g., "your-client-id"
+            realm_name=realm_name,      # e.g., "your-realm"
+            # client_secret_key=os.getenv("KEYCLOAK_CLIENT_SECRET") # Optional
         )
-        self.redirect_uri = os.getenv("KEYCLOAK_REDIRECT_URI", "http://localhost:49301/callback")
+        self.redirect_uri = os.getenv("KEYCLOAK_REDIRECT_URI")
 
     def get_auth_url(self) -> str:
         """Get the authorization URL for OAuth2 flow"""

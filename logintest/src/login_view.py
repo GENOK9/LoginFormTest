@@ -2,7 +2,7 @@ from typing import Optional
 import flet as ft
 import re
 import webbrowser
-from logintest.src.services.keycloak_service import KeycloakService
+from services.keycloak_service import KeycloakService
 from services import db_service, login_handler
 
 class LoginView:
@@ -169,12 +169,7 @@ class LoginView:
             auth_url = self.keycloak_service.get_auth_url()
 
             # Show message to user
-            self.page.add(
-                ft.SnackBar(
-                    content=ft.Text("Opening browser for Keycloak login..."),
-                    open=True
-                )
-            )
+            print("Opening browser for Keycloak login...")
             self.page.update()
 
             # Open browser for OAuth2 flow
